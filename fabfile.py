@@ -33,6 +33,8 @@ from projects import kube
 from projects import manageiq
 from projects import openshift
 from projects import ovirt
+from projects import integration
+from projects import ci
 
 
 @task(name='vm-hosts')

@@ -31,15 +31,13 @@ from fabric.api import task
 from common import enable_services
 from common import enable_tcp_ports
 from common import install_packages
-from manageiq import create_provider
-from manageiq import refresh_provider
 
 
 DEFAULT_ATTEMPTS = 10
 OPENSHIFT = './_output/local/go/bin/openshift'
 MASTER_YAML_FILE = 'openshift.local.config/master-config.yaml'
 ADMIN_KUBECONFIG_FILE = 'openshift.local.config/admin.kubeconfig'
-PROVIDER_NAME = 'openshift01'
+
 
 @task(name='install-deps')
 def install_deps():
@@ -107,18 +105,3 @@ def start():
         run('{0} admin policy add-role-to-group cluster-admin '
             'system:authenticated system:unauthenticated '
             '--namespace=master'.format(OPENSHIFT))
-
-
-@task(name='create-example-app')
-def create_example_app():
-    """creates an example app: "hello-openshift"""
-    with cd('origin'):
-        run('{0} cli create -f '
-            'examples/hello-openshift/hello-pod.json'.format(OPENSHIFT))
-
-
-@task(name='create-provider')
-def create_openshit_provider():
-    """add OpenShift as a provider in ManageIQ"""
-    provider_id = create_provider(PROVIDER_NAME, env.host)
-    refresh_provider(provider_id, env.host)

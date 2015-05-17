@@ -18,8 +18,14 @@
 # Refer to the README and COPYING files for full details of the license
 #
 
+import virtdeploy
+
 from fabric.api import sudo
 from fabric.context_managers import shell_env
+
+
+DEFAULT_DRIVER = 'libvirt'
+MEMORY = 2048
 
 
 def install_packages(packages):
@@ -45,3 +51,17 @@ def enable_tcp_ports(ports):
     for x in ports:
         sudo('firewall-cmd --add-port={0}/tcp'.format(x))
         sudo('firewall-cmd --permanent --add-port={0}/tcp'.format(x))
+
+
+def create_vm(name, template='centos-7.0', memory=MEMORY, driver=DEFAULT_DRIVER):
+    vm = virtdeploy.get_driver(driver)
+    vm.instance_create(name, template, memory)
+    return vm
+
+
+def delete_vm(vm):
+    vm.instance_delete(vm['name'])
+
+
+def start_vm(vm):
+    vm.instance_start(vm['name'])
